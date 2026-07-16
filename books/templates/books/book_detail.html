@@ -1,0 +1,13 @@
+{% extends "books/base.html" %}
+
+{% block title %}{{book.title}}{% endblock title %}
+
+{% block content %}
+    <h4>{{book.title}}</h4>
+    <p>
+     Автор: {{book.author}}
+      <br> Год публикации: {{book.year}}
+
+      <br><br>  Дата добавления: {{book.added_at}}
+    </p>
+{% endblock content %}
