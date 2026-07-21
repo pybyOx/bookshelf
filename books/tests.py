@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework.authtoken.models import Token
 
 from .models import Book
 
@@ -44,7 +45,8 @@ class BookAPITests(APITestCase):
             {'title': 'Title', 'author': 'Robert Martin', 'year': 2000},
         )
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        # 401, а не 403: аноним не предъявил учётных данных — провал аутентификации
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Book.objects.count(), 1)
 
     def test_authenticated_user_creates_book_with_himself_as_owner(self):
@@ -106,6 +108,41 @@ class BookAPITests(APITestCase):
     def test_anonymous_cannot_delete_book(self):
         response = self.client.delete(self.detail_url)
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        # 401 — аутентификации не было; 403 получает опознанный, но чужой юзер
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertTrue(Book.objects.filter(pk=self.book.pk).exists())
-        
+
+    # ── аутентификация по токену ──────────────────────────────────────────────
+
+    def test_user_with_token_can_create_book(self):
+        token = Token.objects.create(user=self.owner)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+
+        response = self.client.post(
+            self.list_url,
+            {
+                'title': 'Title',
+                'author': 'Robert Martin',
+                'year': 2000,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Book.objects.count(), 2)
+        new_book = Book.objects.get(title='Title')
+        self.assertEqual(new_book.owner, self.owner)
+
+    def test_invalid_token_is_rejected(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token abrakadabra123')
+
+        response = self.client.post(
+            self.list_url,
+            {
+                'title': 'Title',
+                'author': 'Robert Martin',
+                'year': 2000,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(Book.objects.count(), 1)
