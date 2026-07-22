@@ -28,8 +28,9 @@ class BookAPITests(APITestCase):
         response = self.client.get(self.list_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['title'], 'Clean Code')
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['title'], 'Clean Code')
 
     def test_anyone_can_retrieve_book_detail(self):
         response = self.client.get(self.detail_url)
@@ -146,3 +147,44 @@ class BookAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Book.objects.count(), 1)
+
+    # ── пагинация ────────────────────────────────────────────────
+
+    def test_list_is_paginated(self):
+        for n in range(2):
+            Book.objects.create(
+                title=f'Title {n}',
+                author='Robert Martin',
+                year=2000,
+                owner=self.owner
+            )
+
+        response = self.client.get(self.list_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+        self.assertEqual(len(response.data['results']), 2)
+        self.assertIsNotNone(response.data['next'])
+        self.assertIsNone(response.data['previous'])
+
+    def test_second_page_is_last(self):
+        for n in range(2):
+            Book.objects.create(
+                title=f'Title {n}',
+                author='Robert Martin',
+                year=2000,
+                owner=self.owner,
+            )
+
+        response = self.client.get(self.list_url, {'page': 2})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 3)
+        self.assertEqual(len(response.data['results']), 1)   # 3 книги при PAGE_SIZE=2
+        self.assertIsNone(response.data['next'])             # дальше страниц нет
+        self.assertIsNotNone(response.data['previous'])
+
+    def test_page_out_of_range_returns_404(self):
+        response = self.client.get(self.list_url, {'page': 99})
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
