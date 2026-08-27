@@ -10,3 +10,8 @@ python manage.py collectstatic --no-input
 
 # 3. Применить миграции к базе PostgreSQL
 python manage.py migrate
+
+# 4. Создать администратора из переменных DJANGO_SUPERUSER_* (логин/почта/пароль).
+#    Если админ уже существует — команда упадёт, но "|| true" не даёт
+#    прерваться всей сборке.
+python manage.py createsuperuser --no-input || true
