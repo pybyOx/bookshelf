@@ -1,0 +1,30 @@
+services:
+  db:                                    # сервис 1 — база
+    image: postgres:16                   # готовый образ Postgres с Docker Hub
+    environment:                         # создаём базу/пользователя/пароль
+      POSTGRES_DB: bookshelf
+      POSTGRES_USER: bookshelf
+      POSTGRES_PASSWORD: bookshelf
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # том: данные переживают перезапуск
+    healthcheck:                         # ждём, пока база реально готова
+      test: ["CMD-SHELL", "pg_isready -U bookshelf"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  web:                                   # сервис 2 — наше приложение
+    build: .                             # собрать из нашего Dockerfile
+    command: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && gunicorn bookshelf.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - "8000:8000"                      # порт контейнера 8000 → на твой Mac 8000
+    environment:                         # секреты подаём СНАРУЖИ (как на Render!)
+      SECRET_KEY: dev-secret-key-change-me
+      DEBUG: "True"
+      DATABASE_URL: postgres://bookshelf:bookshelf@db:5432/bookshelf
+    depends_on:
+      db:
+        condition: service_healthy       # web стартует, только когда db готова
+
+volumes:
+  pgdata:                                # объявляем том для данных Postgres
