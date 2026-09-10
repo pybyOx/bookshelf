@@ -14,8 +14,9 @@
 ## Стек
 
 - Python, Django, Django REST Framework
-- PostgreSQL (production), SQLite (локально)
+- PostgreSQL (production и Docker), SQLite (локально без Docker)
 - pytest, gunicorn, WhiteNoise
+- Docker, Docker Compose
 - Деплой: Render (авто-деплой из GitHub при пуше)
 
 ## Запуск локально
@@ -32,6 +33,23 @@ python manage.py runserver
 ```
 
 Открыть: http://127.0.0.1:8000/books/
+
+## Запуск через Docker
+
+Нужен только установленный Docker — Python и PostgreSQL ставить не надо:
+
+```bash
+git clone https://github.com/pybyOx/bookshelf.git
+cd bookshelf
+docker compose up --build
+```
+
+Поднимутся два контейнера: приложение (gunicorn) и PostgreSQL. Сборка статики и миграции выполняются автоматически при старте.
+
+Открыть: http://localhost:8000/books/
+
+- База стартует пустой. Создать администратора: `docker compose exec web python manage.py createsuperuser`
+- Остановить: `Ctrl+C` или `docker compose down` (данные базы сохраняются в томе `pgdata`)
 
 ## API
 
