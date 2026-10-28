@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book
 from .forms import BookForm
-from . serializers import BookSerializer
+from .serializers import BookSerializer
 from rest_framework import viewsets
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from .pagination import BookPagination
 
 
 def book_list(request):
@@ -32,6 +33,7 @@ class BookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    pagination_class = BookPagination
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

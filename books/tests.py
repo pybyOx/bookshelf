@@ -159,7 +159,7 @@ class BookAPITests(APITestCase):
                 owner=self.owner
             )
 
-        response = self.client.get(self.list_url)
+        response = self.client.get(self.list_url, {'page_size': 2})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 3)
@@ -176,11 +176,11 @@ class BookAPITests(APITestCase):
                 owner=self.owner,
             )
 
-        response = self.client.get(self.list_url, {'page': 2})
+        response = self.client.get(self.list_url, {'page': 2, 'page_size': 2})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 3)
-        self.assertEqual(len(response.data['results']), 1)   # 3 книги при PAGE_SIZE=2
+        self.assertEqual(len(response.data['results']), 1)   # 3 книги по 2 на страницу
         self.assertIsNone(response.data['next'])             # дальше страниц нет
         self.assertIsNotNone(response.data['previous'])
 
