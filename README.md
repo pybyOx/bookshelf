@@ -60,4 +60,4 @@ docker compose up --build
 
 ## Деплой
 
-Задеплоен на [Render](https://render.com): PostgreSQL, gunicorn, WhiteNoise (раздача статики), HTTPS, конфигурация через переменные окружения. Сборка описана в `build.sh` (установка зависимостей → `collectstatic` → `migrate`).
+Задеплоен на [Render](https://render.com) из этого репозитория: образ собирается по `Dockerfile`, статика собирается на этапе сборки образа, миграции применяются при старте контейнера. База — PostgreSQL на [Neon](https://neon.com), адрес передаётся через переменную окружения `DATABASE_URL`. Раздача статики — WhiteNoise, HTTPS и переменные окружения — на стороне Render.
