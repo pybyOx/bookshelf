@@ -13,3 +13,6 @@ class Book(models.Model):
             related_name='books',
             null=True, blank=True,
         )
+
+    class Meta:
+        ordering = ['-added_at']
