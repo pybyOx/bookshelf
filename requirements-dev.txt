@@ -1,0 +1,4 @@
+# Зависимости только для разработки и CI: в прод-образ (Dockerfile) не идут.
+-r requirements.txt
+pytest==9.0.3
+pytest-django==4.14.0

@@ -1,0 +1,27 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+
+    env:
+      # settings.py читает SECRET_KEY как os.environ['SECRET_KEY'] — без него
+      # Django падает на импорте настроек. Значение фиктивное, только для тестов.
+      SECRET_KEY: ci-secret-key-not-for-production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+
+      - run: pip install -r requirements-dev.txt
+
+      - run: pytest -q

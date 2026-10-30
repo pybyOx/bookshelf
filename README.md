@@ -1,5 +1,7 @@
 # Bookshelf — каталог книг (Django + Django REST Framework)
 
+[![tests](https://github.com/pybyOx/bookshelf/actions/workflows/tests.yml/badge.svg)](https://github.com/pybyOx/bookshelf/actions/workflows/tests.yml)
+
 Веб-приложение «книжная полка»: каталог книг с веб-интерфейсом и REST API. Пет-проект, задеплоен в production.
 
 🔗 **Живой сайт:** https://bookshelf-leee.onrender.com/books/
@@ -33,6 +35,17 @@ python manage.py runserver
 ```
 
 Открыть: http://127.0.0.1:8000/books/
+
+## Тесты
+
+```bash
+pip install -r requirements-dev.txt   # pytest и pytest-django поверх основных зависимостей
+pytest -q
+```
+
+14 тестов на `APITestCase` в `books/tests.py`: CRUD через API, права владельца, негативные сценарии.
+Прогон идёт на настройках `bookshelf/settings_test.py` (отключён `SECURE_SSL_REDIRECT`, иначе тестовый клиент получает редирект 301).
+На каждый пуш в `main` и на каждый pull request те же тесты гоняет GitHub Actions — см. бейдж выше.
 
 ## Запуск через Docker
 
