@@ -3,9 +3,13 @@
 {% block title %}Добавление книги{% endblock title %}
 
 {% block content %}
-    <form method="post">
+    <a class="back" href="{% url 'book_list' %}">← Все книги</a>
+    <h1>Новая книга</h1>
+    <p class="lead">Заполните поля — книга появится в каталоге.</p>
+
+    <form method="post" class="form-card">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Добавить</button>
+        <button type="submit" class="btn btn-primary">Добавить</button>
     </form>
 {% endblock content %}

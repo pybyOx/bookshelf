@@ -1,13 +1,23 @@
 {% extends "books/base.html" %}
 
-{% block title %}{{book.title}}{% endblock title %}
+{% block title %}{{ book.title }}{% endblock title %}
 
 {% block content %}
-    <h4>{{book.title}}</h4>
-    <p>
-     Автор: {{book.author}}
-      <br> Год публикации: {{book.year}}
+    <a class="back" href="{% url 'book_list' %}">← Все книги</a>
 
-      <br><br>  Дата добавления: {{book.added_at}}
-    </p>
+    <article class="book-detail">
+        <div class="cover" aria-hidden="true">{{ book.title|first|upper }}</div>
+        <div>
+            <h1>{{ book.title }}</h1>
+            <p class="author">{{ book.author }}</p>
+            <dl class="facts">
+                <dt>Год публикации</dt>
+                <dd>{{ book.year }}</dd>
+                <dt>Добавлена в каталог</dt>
+                <dd>{{ book.added_at|date:"d.m.Y" }}</dd>
+                <dt>Эта книга в API</dt>
+                <dd><a href="/api/books/{{ book.pk }}/"><code>GET /api/books/{{ book.pk }}/</code></a></dd>
+            </dl>
+        </div>
+    </article>
 {% endblock content %}

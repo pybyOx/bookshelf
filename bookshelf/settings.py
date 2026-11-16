@@ -131,6 +131,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Куда @login_required отправляет анонимного пользователя.
+# Отдельной страницы входа на сайте нет — используем форму входа админки,
+# она сама вернёт пользователя обратно по параметру ?next=.
+LOGIN_URL = '/admin/login/'
+
 # Папка, куда `python manage.py collectstatic` соберёт всю статику для прода.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 

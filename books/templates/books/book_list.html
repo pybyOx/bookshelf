@@ -1,13 +1,49 @@
 {% extends "books/base.html" %}
 
-{% block title %}Список книг{% endblock title %}
+{% block title %}Каталог книг{% endblock title %}
 
 {% block content %}
-    <ul>
-        {% for book in books %}
-            <li>{{ book.title }} - {{ book.author }} ({{ book.year }})</li>
-        {% empty %}
-            <p>Нет книг</p>
-        {% endfor %}
-    </ul>
+    <section class="intro">
+        <h1>Каталог книг</h1>
+        <p class="lead">
+            Учебный проект: веб-интерфейс на шаблонах Django и REST API на DRF
+            с токен-аутентификацией и правами по владельцу записи.
+        </p>
+        <ul class="stack">
+            <li>Python 3.13</li>
+            <li>Django</li>
+            <li>Django REST Framework</li>
+            <li>PostgreSQL</li>
+            <li>Docker</li>
+            <li>pytest</li>
+            <li>GitHub Actions</li>
+        </ul>
+        <div class="actions">
+            <a class="btn btn-primary" href="https://github.com/pybyOx/bookshelf" target="_blank" rel="noopener">Код на GitHub</a>
+            <a class="btn" href="/api/books/">Открыть REST API</a>
+        </div>
+    </section>
+
+    <div class="section-title">
+        <h2>Книги</h2>
+        <span class="count">{{ books|length }} в каталоге</span>
+    </div>
+
+    {% if books %}
+        <ul class="book-grid">
+            {% for book in books %}
+                <li>
+                    <a class="book-card" href="{% url 'book_detail' book.pk %}">
+                        <div class="cover" aria-hidden="true">{{ book.title|first|upper }}</div>
+                        <div class="body">
+                            <p class="title">{{ book.title }}</p>
+                            <p class="meta">{{ book.author }} · {{ book.year }}</p>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty">В каталоге пока нет книг.</p>
+    {% endif %}
 {% endblock content %}

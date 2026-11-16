@@ -1,21 +1,41 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}BookSHELF{% endblock title %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="BookSHELF — каталог книг на Django и Django REST Framework.">
+    <title>{% block title %}BookSHELF{% endblock title %} · BookSHELF</title>
+    <link rel="stylesheet" href="{% static 'books/style.css' %}">
 </head>
 <body>
 
-    <header>
-        <h2><a href="{% url 'book_list' %}">BookSHELF</a></h2>
+    <header class="site-header">
+        <div class="container">
+            <a class="logo" href="{% url 'book_list' %}">Book<span>SHELF</span></a>
+            <nav class="nav">
+                <a href="{% url 'book_list' %}">Книги</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'add_book' %}">Добавить книгу</a>
+                {% endif %}
+                <a href="/api/books/">REST API</a>
+                <a href="https://github.com/pybyOx/bookshelf" target="_blank" rel="noopener">GitHub</a>
+            </nav>
+        </div>
     </header>
 
     <main>
-        {% block content %}{% endblock content %}
+        <div class="container">
+            {% block content %}{% endblock content %}
+        </div>
     </main>
 
-    <footer>
-        <p>© 2026 BookSHELF</p>
+    <footer class="site-footer">
+        <div class="container">
+            <span>© 2026 BookSHELF · пет-проект Оксаны Ушаковой</span>
+            <span>
+                <a href="https://github.com/pybyOx" target="_blank" rel="noopener">github.com/pybyOx</a>
+            </span>
+        </div>
     </footer>
 
 </body>

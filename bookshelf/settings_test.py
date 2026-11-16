@@ -8,3 +8,10 @@
 from .settings import *  # noqa: F401,F403
 
 SECURE_SSL_REDIRECT = False
+
+# В проде whitenoise берёт имена файлов из манифеста, который создаёт collectstatic.
+# В тестах collectstatic не запускается, поэтому используем обычное хранилище статики.
+STORAGES = {
+    **STORAGES,  # noqa: F405
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+}
